@@ -1,0 +1,11 @@
+# COMMANDS
+CREATE_COMMAND = "create"
+INIT_COMMAND = "init"
+ADD_COMMAND = "add"
+MODIFY_COMMAND = "modify"
+DELETE_COMMAND = "delete"
+LIST_COMMAND = "ls"
+PUSH_COMMAND = "push"
+HELP_COMMAND = "help"
+
+

@@ -33,31 +33,34 @@ def createPackage(title, location, desc, start, end, attendees, reminders):
 	return event
 
 
-def createEvent(service):
-	title = raw_input('Title: ')
-	location = raw_input('Location: ')
-	desc = raw_input('Description: ')
-	start = '2018-07-27T16:00:00'
-	end = '2018-07-27T16:45:00'
+def createEvent(service, title, location, desc, start, end, host_email, guest_emails, alert):
+	#title = raw_input('Title: ')
+	#location = raw_input('Location: ')
+	#desc = raw_input('Description: ')
+	#start = '2018-07-27T16:00:00'
+	#end = '2018-07-27T16:45:00'
+	start = start.strftime('%Y-%m-%dT%H:%M:%S')  
+	end = end.strftime('%Y-%m-%dT%H:%M:%S')  
+
 	attendees = [
-		{
-			'email': 'sgomez@atlassian.com',
+		{ 
+			'email': host_email,
 			'organizer' : True
-		},
-		{
-			'email': 'tchoi@atlassian.com'
-		}
-	]
+		}]
+	for email in guest_emails: 
+		attendees.append({'email': email}) 	
+    
 	reminders = {
     	'useDefault': False,
     	'overrides': [
-    	  {'method': 'popup', 'minutes': 10}
+    	  {'method': 'popup', 'minutes': alert}
     	]
   	}
 	eventPackage = createPackage(title, location, desc, start, end, attendees, reminders)
-	event = service.events().insert(calendarId='sgomez@atlassian.com', body=eventPackage, sendNotifications=True).execute()
-	print('Event created! ID: %s' %(event['id']) )
-
+	#event = service.events().insert(calendarId='sgomez@atlassian.com', body=eventPackage, sendNotifications=True).execute()
+	event = service.events().insert(calendarId=host_email, body=eventPackage, sendNotifications=True).execute()
+	print('Event created! ID: %s' %(event['id']))
+	return event['id'] 
 
 def getEvents(service, organizer, attendee):
 	# Call the Calendar API
@@ -128,7 +131,7 @@ def deleteEvent(service):
 	print('Event %s deleted!' %(eventId))
 
 	
-
+'''
 # Main
 service = getService('token.json', 'credentials.json')
 operation = raw_input("What would you like to do (create, edit, delete): ")
@@ -141,7 +144,7 @@ elif(operation == 'delete'):
 	deleteEvent(service)
 else:
 	print('Invalid command')
-
+'''
 
 
 
