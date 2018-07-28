@@ -62,7 +62,7 @@ def createEvent(service, title, location, desc, start, end, host_email, guest_em
 	print('Event created! ID: %s' %(event['id']))
 	return event['id'] 
 
-def getEvents(service, organizer, attendee):
+def getEvents(service, organizer, attendee_emails):
 	# Call the Calendar API
 	now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
 
@@ -78,18 +78,18 @@ def getEvents(service, organizer, attendee):
 	for event in events:
 		guests = event.get('attendees', [])
 		for guest in guests: 
-			if(guest['email'] == attendee):
+			if(guest['email'] in attendee_emails):
 				targetID = event['id']
 				found_events.append('Event: %s | ID: %s' %(event['summary'] , targetID) )
 	return found_events
 
 
-def editEvent(service):
+def editEvent(service, organizer_email, eventId, fieldsToChange, updated_event):
 	#Get info
-	organizer = 'sgomez@atlassian.com'
-	attendee = 'tchoi@atlassian.com'
-	events = getEvents(service, organizer, attendee)
-
+	#organizer = 'sgomez@atlassian.com'
+	#attendee = 'tchoi@atlassian.com'
+	#events = getEvents(service, organizer, attendee)
+	'''
 	if not events:
 		print('No upcoming events found.')
 		return
@@ -98,38 +98,81 @@ def editEvent(service):
 		print(event)
 
 	eventId = raw_input('Please enter the ID of the event you would like to change: ')
-
+	
 	#Need to figure out how let them edit mutliple fields or just one at a time? - what about formatting (time)
 	fieldToChange = raw_input('Which field would you like to change?: ')
 	newValue = raw_input('New value for %s: ' %(fieldToChange))
-
+	'''
+	
 	#Get event and change
-	event = service.events().get(calendarId=organizer, eventId=eventId).execute()
-	print('Changed %s' %(event[fieldToChange]))
-	event[fieldToChange] = newValue
-	updated_event = service.events().update(calendarId=organizer, eventId=eventId, body=event, sendNotifications=True).execute()
-	print('to: %s\nfor %s' %(updated_event[fieldToChange], fieldToChange))
+	event = service.events().get(calendarId=organizer_email, eventId=eventId).execute()
+
+	# take care about different fields
+	field_translator = {'-title':'summary', '-loc':'location', '-desc':'description', '-alert':'reminders'} 
+
+	# change
+	'''
+	start = updated_event.time.strftime('%Y-%m-%dT%H:%M:%S')
+	start_pivot = start.find('T')
+	end = updated_event.endtime.strftime('%Y-%m-%dT%H:%M:%S')
+	end_pivot = end.find('T') 	
+	
+	cur_start_time = event['start']['dateTime'] 
+	cur_end_time = event['end']['dateTime']
+	cur_start_pivot = cur_start_time.find('T')			
+	cur_end_pivot = cur_end_time.find('T')			
+	if '-date' in fieldsToChange and '-time' in fieldsToChange: 
+		event['start']['dateTime'] = start 
+		event['end']['dateTime'] = end   
+	elif '-date' in fieldsToChange: 
+		event['start']['dateTime'] = start[:start_pivot] + cur_start_time[cur_start_pivot:] 
+		event['end']['dateTime'] = end[:end_pivot] + cur_end_time[cur_end_pivot:] 
+	elif '-time' in fieldsToChange or '-len' in fieldsToChange: 
+		event['start']['dateTime'] = cur_start_time[:cur_start_pivot] + start[start_pivot] 
+		event['end']['dateTime'] = cur_end_time[:cur_end_pivot] + end[end_pivot] 
+	
+			
+		pivot = event['start']['dateTime'].find('T')			
+		event['start']['dateTime'][pivot+1:] = start[start_pivot+1:] 
+		pivot = event['end']['dateTime'].find('T')			
+		event['end']['dateTime'][pivot+1:] = end[end_pivot+1:] 
+	'''		
+	for field in fieldsToChange.keys():
+		if field == '-time' or field == '-len' or field == '-date':
+			start = updated_event.time.strftime('%Y-%m-%dT%H:%M:%S')
+			end = updated_event.endtime.strftime('%Y-%m-%dT%H:%M:%S')	
+			event['start']['dateTime'] = start 
+			event['end']['dateTime'] = end   
+		else:	
+			fieldToChange = field_translator[field]  
+			event[fieldToChange] = fieldsToChange[field]  
+	
+	#print('Changed %s' %(event[fieldToChange]))
+	#event[fieldToChange] = newValue
+	updated_event = service.events().update(calendarId=organizer_email, eventId=eventId, body=event, sendNotifications=True).execute()
+	#print('to: %s\nfor %s' %(updated_event[fieldToChange], fieldToChange))
 
 
-def deleteEvent(service):
+#def deleteEvent(service):
+def deleteEvent(service, organizer_email, eventId):
 	#Get info
-	organizer = 'sgomez@atlassian.com'
-	attendee = 'tchoi@atlassian.com'
-	events = getEvents(service, organizer, attendee)
+	#organizer = 'sgomez@atlassian.com'
+	#attendee = 'tchoi@atlassian.com'
+	'''	
+    events = getEvents(service, organizer_email, attendee_emails)
 
 	if not events:
 		print('No events to delete.')
-		return
+		return False 
 
 	print('Events to delete:')
 	for event in events:
 		print(event)
 
-	eventId = raw_input('Please enter the ID of the event you would like to delete: ')
-
-	service.events().delete(calendarId=organizer, eventId=eventId, sendNotifications=True).execute()
+	#eventId = raw_input('Please enter the ID of the event you would like to delete: ')
+	'''
+	service.events().delete(calendarId=organizer_email, eventId=eventId, sendNotifications=True).execute()
 	print('Event %s deleted!' %(eventId))
-
 	
 '''
 # Main
