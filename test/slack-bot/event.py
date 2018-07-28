@@ -131,6 +131,7 @@ class Event():
         #self.date = date
         items = date.split('/') # assume form like 07/26/2018 for now 
         self.time = self.time.replace(year=int(items[2]), month=int(items[0]), day=int(items[1]))    
+        self.set_endtime()
 
 
     def set_alert(self, alert):

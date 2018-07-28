@@ -60,7 +60,11 @@ def get_name_by_id(sc, id, token):
     """
     given an id, returns the corresponding id
     """
-    users_list = sc.api_call("users.list", token=token) 
+    while True: 
+        users_list = sc.api_call("users.list", token=token) 
+        if users_list['ok']:
+            break 
+        print('(get_name_by_id) failed to get user list') 
     members = users_list["members"]
 
     for member in members:
@@ -73,7 +77,12 @@ def get_email_by_id(sc, id, token):
     """
     given an id, returns the corresponding email 
     """
-    users_list = sc.api_call("users.list", token=token) 
+
+    while True:
+        users_list = sc.api_call("users.list", token=token) 
+        if users_list['ok']:
+            break
+        print('(get_email_by_id) failed to get user list') 
     members = users_list["members"]
 
     for member in members:
