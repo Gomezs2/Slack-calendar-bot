@@ -39,7 +39,6 @@ def parse_mentions(msg, remove_dup=True):
     given a string message, return a list of mentioned people
     returned value will be the id of them 
     '''
-
     mentions = []
     while(len(msg)): 
         match = re.search(MENTION_REGEX, msg) 
@@ -77,7 +76,6 @@ def get_email_by_id(sc, id, token):
     """
     given an id, returns the corresponding email 
     """
-
     while True:
         users_list = sc.api_call("users.list", token=token) 
         if users_list['ok']:

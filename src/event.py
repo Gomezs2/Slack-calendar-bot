@@ -44,10 +44,8 @@ class EventManager():
 
 class Event(): 
     def __init__(self, host, host_email, host_name, title=DEFAULT_TITLE, start_time=DEFAULT_TIME, length=DEFAULT_LENGTH, date=DEFAULT_DATE, alert=DEFAULT_ALERT, desc=DEFAULT_DESC, loc=DEFAULT_LOC, guests=DEFAULT_GUESTS, guest_emails=DEFAULT_GUEST_EMAILS, guest_names=DEFAULT_GUEST_NAMES):
-
         self.title = title
         self.length = length # mins
-        
         time_zone = pytz.timezone(TIME_ZONE) 
         today = datetime.now(time_zone) 
         self.time = datetime(year=today.year, month=today.month, day=today.day, hour=0, minute=0, second=0)
@@ -79,13 +77,8 @@ class Event():
         out += '\n*length*: ' + str(self.length) + ' minutes' 
         out += '\n*alert*: before ' + str(self.alert) + ' minutes'
         out += '\n*desc*: ' + self.desc
-        out += '\n*location*: ' + self.loc
-        
-        #if len(self.guest_names) > 1: 
+        out += '\n*location*: ' + self.loc        
         out += '\n*guests*: ' + ', '.join(self.guest_names)
-        #elif len(self.guest_names) == 1:
-        #    out += '\n*guests*: ' + self.guest_names[0]
- 
         return out
 
 
@@ -128,8 +121,7 @@ class Event():
 
 
     def set_date(self, date):
-        #self.date = date
-        items = date.split('/') # assume form like 07/26/2018 for now 
+        items = date.split('/') 
         self.time = self.time.replace(year=int(items[2]), month=int(items[0]), day=int(items[1]))    
         self.set_endtime()
 

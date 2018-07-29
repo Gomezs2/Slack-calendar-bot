@@ -58,7 +58,6 @@ def handle_command(slack_client, sender, command, channel):
         Executes bot command if the command is known
     """
     # Default response is help text for the user
-    #default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND)
     global em  
     default_response = "Sorry .. *Sergio* and *Taeyeong* haven't taught me how to respond to your command .. "
 
@@ -72,8 +71,6 @@ def handle_command(slack_client, sender, command, channel):
     all_names = [member["real_name"] for member in members] # extract only names 
     sender_email = [member["profile"]["email"] for member in members if member['id'] == sender ][0]  
     sender_name = [member["real_name"] for member in members if member['id'] == sender][0] 
-    #sender_email = get_email_by_id(slack_client, sender, AUTH_TOKEN) 
-    #sender_name = get_name_by_id(slack_client, sender, AUTH_TOKEN) 
     
     # This is where you start to implement more commands!
     if command.startswith(CREATE_COMMAND):

@@ -42,9 +42,7 @@ def update_event(em, user_id, msg, all_ids, all_names, user_email='', user_name=
     else:
         event = em.find_event(user_id)
  
-    if '-guests' in arg_dict: 
-        #print(arg_dict['-guests'])
-        #guests = ' '.join(arg_dict['-guests'])  
+    if '-guests' in arg_dict:  
         guests = parse_mentions(arg_dict['-guests']) 
 
         # check if valid guests        
